@@ -1,7 +1,7 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99
+CFLAGS = -Wall -Wextra -std=c99 'pkg-config --cflags --libs gtk+-3.0'
 LFLAGS = 
-LIBS = 
+LIBS = 'pkg-config --cflags --libs gtk+-3.0'
 SOURCES = jeopardy.c questions.c players.c
 OBJECTS = $(subst .c,.o,$(SOURCES))
 EXE = jeopardy.exe

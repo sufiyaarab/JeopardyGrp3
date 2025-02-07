@@ -9,10 +9,12 @@
  * All rights reserved.
  *
  */
+#include <gtk/gtk.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+
 #include "questions.h"
 #include "players.h"
 #include "jeopardy.h"
@@ -32,12 +34,84 @@ void tokenize(char *input, char **tokens) {
 // Displays the game results for each player, their name and final score, ranked from first to last place
 void show_results(player *players, int num_players){
     // Display the final results for each player including the name and final score
-    printf("Game Results:\n");
-    printf("Rank\tName\t\tScore\n");
+    //printf("Game Results:\n");
+    //printf("Rank\tName\t\tScore\n");
+    //for (int i = 0; i < num_players; i++) {
+    //    printf("%d\t%s\t\t%d\n", i + 1, players[i].name, players[i].score);
+   // }
+   GtkWidget *window;
+    GtkWidget *grid;
+    GtkWidget *label;
+    char buffer[256];
+
+    gtk_init(NULL, NULL);
+
+    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(GTK_WINDOW(window), "Game Results");
+    gtk_window_set_default_size(GTK_WINDOW(window), 400, 300);
+    g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+
+    grid = gtk_grid_new();
+    gtk_container_add(GTK_CONTAINER(window), grid);
+
+    label = gtk_label_new("Game Results:");
+    gtk_grid_attach(GTK_GRID(grid), label, 0, 0, 1, 1);
+
     for (int i = 0; i < num_players; i++) {
-        printf("%d\t%s\t\t%d\n", i + 1, players[i].name, players[i].score);
+        snprintf(buffer, sizeof(buffer), "Rank %d: %s - %d points", i + 1, players[i].name, players[i].score);
+        label = gtk_label_new(buffer);
+        gtk_grid_attach(GTK_GRID(grid), label, 0, i + 1, 1, 1);
     }
+
+    gtk_widget_show_all(window);
+    gtk_main();
 }
+
+void on_category_button_clicked(GtkWidget *widget, gpointer data) {
+    // Handle category button click
+}
+
+void on_value_button_clicked(GtkWidget *widget, gpointer data) {
+    // Handle value button click
+}
+
+void create_game_interface() {
+    GtkWidget *window;
+    GtkWidget *grid;
+    GtkWidget *button;
+
+    gtk_init(NULL, NULL);
+
+    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(GTK_WINDOW(window), "Jeopardy Game");
+    gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
+    g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+
+    grid = gtk_grid_new();
+    gtk_container_add(GTK_CONTAINER(window), grid);
+
+    // Create category buttons
+    for (int i = 0; i < NUM_CATEGORIES; i++) {
+        button = gtk_button_new_with_label(categories[i]);
+        g_signal_connect(button, "clicked", G_CALLBACK(on_category_button_clicked), NULL);
+        gtk_grid_attach(GTK_GRID(grid), button, i, 0, 1, 1);
+    }
+
+    // Create value buttons
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < NUM_CATEGORIES; j++) {
+            char value_label[16];
+            snprintf(value_label, sizeof(value_label), "$%d", (i + 1) * 100);
+            button = gtk_button_new_with_label(value_label);
+            g_signal_connect(button, "clicked", G_CALLBACK(on_value_button_clicked), NULL);
+            gtk_grid_attach(GTK_GRID(grid), button, j, i + 1, 1, 1);
+        }
+    }
+
+    gtk_widget_show_all(window);
+    gtk_main();
+}
+
 
 void display_game_intro() {
     printf("***Welcome to Jeopardy!***\n");
@@ -69,8 +143,10 @@ int main(int argc, char *argv[])
 
     // Display the game introduction and initialize the questions
     display_game_intro();
+
     initialize_game();
-    
+    initialize_players(players, NUM_PLAYERS);
+    create_game_interface();
     // Prompt for players names
     for (int i = 0; i < NUM_PLAYERS; i++){
         printf("Enter the name of player %d: ", i+1);
