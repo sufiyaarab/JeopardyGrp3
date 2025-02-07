@@ -41,3 +41,12 @@ void update_score(player *players, int num_players, char *name, int score)
         }
     }
 }
+
+// Print the scores of each player
+void print_players(player *players, int num_players)
+{
+    printf("Player Scores:\n");
+    for (int i = 0; i < num_players; i++){
+        printf("Player %s has a score of %d\n", players[i].name, players[i].score);
+    }
+}
