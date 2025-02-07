@@ -10,6 +10,15 @@
 #include <string.h>
 #include "players.h"
 
+//initialize the players with a name and score of 0
+void initialize_players(player *players, int num_players){
+    for (int i = 0; i < num_players; i++){
+        printf("Enter the name of player %d: ", i+1);
+        scanf("%s", players[i].name);
+        players[i].score = 0;
+    }
+}
+
 // Returns true if the player name matches one of the existing players
 bool player_exists(player *players, int num_players, char *name)
 {
