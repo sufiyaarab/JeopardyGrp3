@@ -10,6 +10,7 @@
  *
  */
 #include <gtk/gtk.h>
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,14 +23,30 @@
 // Put macros or constants here using #define
 #define BUFFER_LEN 256
 #define NUM_PLAYERS 4
-
+int current_player = 0;
+srand(time(NULL));
 // Put global environment variables here
 
 // Processes the answer from the user containing what is or who is and tokenizes it to retrieve the answer.
 void tokenize(char *input, char **tokens) {
     // Tokenize the answer to retrieve the answer and check if it is correct
+    const char delimiter[] = " ";
+    char *token;
+    int i = 0;
 
+    // Get the first token
+    token = strtok(input, delimiter);
+
+    // Walk through other tokens
+    while (token != NULL) {
+        tokens[i++] = token;
+        token = strtok(NULL, delimiter);
+    }
+
+    // Null-terminate the tokens array
+    tokens[i] = NULL;
 }
+
 
 // Displays the game results for each player, their name and final score, ranked from first to last place
 void show_results(player *players, int num_players){
@@ -160,16 +177,16 @@ int main(int argc, char *argv[])
         char category[MAX_LEN];
         int value;
         char answer[MAX_LEN];
-
+        printf("Hi Player %s, it's your turn.", players[current_player].name);
         // Display categories and prompt for category and value
         display_categories();
-        printf("Enter a category: ");
+        printf("Enter a category: ", players[current_player].name);
         scanf("%s", category);
-        printf("Enter a value: ");
+        printf("Enter a value: ", players[current_player].name);
         scanf("%d", &value);
 
         // Display the question
-        display_question(category, value);
+        display_question(category, value, answer);
 
         // Get the answer from the player
         printf("Enter your answer: ");
@@ -198,6 +215,8 @@ int main(int argc, char *argv[])
             break;
         }
     }
+    current_player = (current_player + 1) % NUM_PLAYERS;
+}
 
     // Display the final results and exit
     show_results(players, NUM_PLAYERS);
