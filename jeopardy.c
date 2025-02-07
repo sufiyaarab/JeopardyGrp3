@@ -78,16 +78,56 @@ int main(int argc, char *argv[])
         players[i].score = 0;
     }
     // initialize each of the players in the array
-    free(players);
-
     // Perform an infinite loop getting command input from users until game ends
     while (fgets(buffer, BUFFER_LEN, stdin) != NULL)
     {
-        //Call functions from the questions and players source files
-        
-        // Execute the game until all questions are answered
+        char category[MAX_LEN];
+        int value;
+        char answer[MAX_LEN];
 
-        // Display the final results and exit
+        // Display categories and prompt for category and value
+        display_categories();
+        printf("Enter a category: ");
+        scanf("%s", category);
+        printf("Enter a value: ");
+        scanf("%d", &value);
+
+        // Display the question
+        display_question(category, value);
+
+        // Get the answer from the player
+        printf("Enter your answer: ");
+        scanf("%s", answer);
+
+        // Check if the answer is correct
+        if (valid_answer(category, value, answer)) {
+            printf("Amazingly done, correct!\n");
+            // Update the player's score
+            printf("Enter the player's name: ");
+            scanf("%s", buffer);
+            update_score(players, NUM_PLAYERS, buffer, value);
+        } else {
+            printf("Incorrect...Sorry!\n");
+        }
+
+        // Check if all questions have been answered
+        bool all_answered = true;
+        for (int i = 0; i < NUM_QUESTIONS; i++) {
+            if (!questions[i].answered) {
+                all_answered = false;
+                break;
+            }
+        }
+        if (all_answered) {
+            break;
+        }
     }
+
+    // Display the final results and exit
+    show_results(players, NUM_PLAYERS);
+
+    // Free the allocated memory at the end of the program
+    free(players);
+
     return EXIT_SUCCESS;
-}
+    }
