@@ -1,7 +1,11 @@
 /*
  * Tutorial 4 Jeopardy Project for SOFE 3950U / CSCI 3020U: Operating Systems
  *
- * Copyright (C) 2015, <GROUP MEMBERS>
+ * Copyright (C) 2015, 
+ * * Yara Mahmoud
+ * Zainab Ahmed
+ * Rushda Khan
+ * Sufiya Arab
  * All rights reserved.
  *
  */
@@ -20,10 +24,15 @@
 // Put global environment variables here
 
 // Processes the answer from the user containing what is or who is and tokenizes it to retrieve the answer.
-void tokenize(char *input, char **tokens);
+void tokenize(char *input, char **tokens) {
+    // Tokenize the answer to retrieve the answer and check if it is correct
+
+}
 
 // Displays the game results for each player, their name and final score, ranked from first to last place
-void show_results(player *players, int num_players);
+void show_results(player *players, int num_players){
+    // Display the final results for each player including their name and final score
+}
 
 
 int main(int argc, char *argv[])
@@ -36,7 +45,7 @@ int main(int argc, char *argv[])
 
     // Display the game introduction and initialize the questions
     initialize_game();
-
+        
     // Prompt for players names
     
     // initialize each of the players in the array
