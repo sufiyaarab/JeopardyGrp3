@@ -46,6 +46,8 @@
      for (int i = 0; i < NUM_PLAYERS; i++) {
          char buffer[512];  // Increased buffer size
          snprintf(buffer, sizeof(buffer), "%d. %s - %d points", i + 1, players[i].name, players[i].score);
+         GtkWidget *ranking_label = gtk_label_new(buffer);
+         gtk_widget_set_margin_bottom(ranking_label, 10);  // Space between each rank
          gtk_grid_attach(GTK_GRID(grid), gtk_label_new(buffer), 0, i + 1, 1, 1);
      }
  
@@ -69,9 +71,10 @@
  
      if (strcasecmp(q->answer, trimmed_answer) == 0) {  // Case-insensitive comparison
          update_score(players, NUM_PLAYERS, players[current_player].name, q->value);
-         gtk_label_set_text(GTK_LABEL(widgets[0]), "Correct!");
+         gtk_label_set_text(GTK_LABEL(widgets[0]), "<span foreground=\"green\">Correct!</span>");
      } else {
          gtk_label_set_text(GTK_LABEL(widgets[0]), "Incorrect. Try again next time!");
+         gtk_label_set_text(GTK_LABEL(widgets[0]), "<span foreground=\"red\">Incorrect. Try again next time!</span>");
      }
  
      q->answered = true;
@@ -135,18 +138,21 @@
      player_label = gtk_label_new(buffer);
      gtk_grid_attach(GTK_GRID(main_grid), player_label, 0, 0, 3, 1);
  
-     const char *categories[] = {"programming", "algorithms", "databases"};
+     const char *categories[] = {"Programming", "Algorithms", "Databases"};
      for (int i = 0; i < NUM_CATEGORIES; i++) {
          GtkWidget *category_label = gtk_label_new(categories[i]);
+         gtk_widget_set_margin_start(category_label, 10);  // Margin for spacing
+         gtk_widget_set_margin_end(category_label, 10);
          gtk_grid_attach(GTK_GRID(main_grid), category_label, i, 1, 1, 1);
      }
  
+     int values[] = {100, 200, 300, 400}; 
      for (int row = 0; row < 4; row++) {
          for (int col = 0; col < NUM_CATEGORIES; col++) {
              int index = row * NUM_CATEGORIES + col;
              GtkWidget *button;
              char label[32];
-             snprintf(label, sizeof(label), "$%d", questions[index].value);
+             snprintf(label, sizeof(label), "$%d", values[row]);
  
              button = gtk_button_new_with_label(label);
  
