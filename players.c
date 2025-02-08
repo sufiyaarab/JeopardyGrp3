@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "players.h"
+#include <time.h>
 
 //initialize the players with a name and score of 0
 void initialize_players(player *players, int num_players){

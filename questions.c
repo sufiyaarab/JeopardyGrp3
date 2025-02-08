@@ -13,6 +13,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "questions.h"
+#include <time.h>
+
+// Define the questions array here
+question questions[NUM_QUESTIONS];
+
 
 // Initializes the array of questions for the game
 void initialize_game(void)
@@ -36,7 +41,7 @@ void initialize_game(void)
     int values [] = {100, 200, 300, 400};
     int index = 0;
 
-    for (int 1 = 0; i < NUM_CATEGORIES; I++){
+    for (int i = 0; i < NUM_CATEGORIES; i++){
         for (int j = 0; j < 4; j++){
             strcpy(questions[index].category, questions_data[index][0]);
             strcpy(questions[index].question, questions_data[index][1]);
