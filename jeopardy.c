@@ -89,26 +89,38 @@
  }
  
  void show_final_rankings() {
-     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-     gtk_window_set_title(GTK_WINDOW(window), "Final Rankings");
-     gtk_window_set_default_size(GTK_WINDOW(window), 400, 300);
-     GtkWidget *grid = gtk_grid_new();
-     gtk_container_add(GTK_CONTAINER(window), grid);
- 
-     gtk_grid_attach(GTK_GRID(grid), gtk_label_new("Final Rankings:"), 0, 0, 1, 1);
- 
-     qsort(players, NUM_PLAYERS, sizeof(player), compare_scores);
- 
-     for (int i = 0; i < NUM_PLAYERS; i++) {
-         char buffer[512];  // Increased buffer size
-         snprintf(buffer, sizeof(buffer), "%d. %s - %d points", i + 1, players[i].name, players[i].score);
-         GtkWidget *ranking_label = gtk_label_new(buffer);
-         gtk_widget_set_margin_bottom(ranking_label, 10);  // Space between each rank
-         gtk_grid_attach(GTK_GRID(grid), gtk_label_new(buffer), 0, i + 1, 1, 1);
-     }
- 
-     gtk_widget_show_all(window);
+    GtkWidget *window, *grid, *title_label;
+
+    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(GTK_WINDOW(window), "Final Rankings");
+    gtk_window_set_default_size(GTK_WINDOW(window), 400, 350);
+    gtk_container_set_border_width(GTK_CONTAINER(window), 20);  // Add margin
+
+    grid = gtk_grid_new();
+    gtk_grid_set_row_spacing(GTK_GRID(grid), 15);
+    gtk_container_add(GTK_CONTAINER(window), grid);
+
+    // Styled title label
+    title_label = gtk_label_new("🏆 Final Rankings 🏆");
+    apply_font_style(title_label, "Poppins Bold 18");
+    gtk_label_set_xalign(GTK_LABEL(title_label), 0.5);
+    gtk_grid_attach(GTK_GRID(grid), title_label, 0, 0, 1, 1);
+
+    qsort(players, NUM_PLAYERS, sizeof(player), compare_scores);
+
+    // Loop through players and display rankings
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+        char buffer[512];
+        snprintf(buffer, sizeof(buffer), "%d. %s - %d points", i + 1, players[i].name, players[i].score);
+        
+        GtkWidget *ranking_label = create_cute_label_with_bubble(buffer, COLOR_LAVENDER, COLOR_GREY);
+        gtk_widget_set_margin_bottom(ranking_label, 10);  // Space between each rank
+        gtk_grid_attach(GTK_GRID(grid), ranking_label, 0, i + 1, 1, 1);
+    }
+
+    gtk_widget_show_all(window);
  }
+
  
  bool all_questions_answered() {
      for (int i = 0; i < NUM_QUESTIONS; i++) {
@@ -145,35 +157,51 @@
  }
  
  void display_question_window(question *q) {
-     GtkWidget *window, *grid, *label, *entry, *button;
-     GtkWidget **widgets = malloc(3 * sizeof(GtkWidget *));
- 
-     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-     gtk_window_set_title(GTK_WINDOW(window), "Answer the Question");
-     gtk_window_set_default_size(GTK_WINDOW(window), 400, 200);
- 
-     grid = gtk_grid_new();
-     gtk_container_add(GTK_CONTAINER(window), grid);
- 
-     label = gtk_label_new(q->question);
-     gtk_grid_attach(GTK_GRID(grid), label, 0, 0, 2, 1);
- 
-     entry = gtk_entry_new();
-     gtk_grid_attach(GTK_GRID(grid), entry, 0, 1, 2, 1);
- 
-     GtkWidget *feedback_label = gtk_label_new("");
-     gtk_grid_attach(GTK_GRID(grid), feedback_label, 0, 3, 2, 1);
- 
-     widgets[0] = feedback_label;
-     widgets[1] = entry;
-     widgets[2] = (GtkWidget *)q;
- 
-     button = gtk_button_new_with_label("Submit Answer");
-     g_signal_connect(button, "clicked", G_CALLBACK(check_answer), widgets);
-     gtk_grid_attach(GTK_GRID(grid), button, 0, 2, 2, 1);
- 
-     gtk_widget_show_all(window);
+    GtkWidget *window, *grid, *label, *entry, *button, *feedback_label;
+    GtkWidget **widgets = malloc(3 * sizeof(GtkWidget *));
+
+    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(GTK_WINDOW(window), "Answer the Question");
+    gtk_window_set_default_size(GTK_WINDOW(window), 500, 250);
+    gtk_container_set_border_width(GTK_CONTAINER(window), 20);  // Add padding
+
+    grid = gtk_grid_new();
+    gtk_grid_set_row_spacing(GTK_GRID(grid), 10);
+    gtk_grid_set_column_spacing(GTK_GRID(grid), 10);
+    gtk_container_add(GTK_CONTAINER(window), grid);
+
+    // Stylish question label
+    label = gtk_label_new(q->question);
+    gtk_widget_set_size_request(label, 450, 60);
+    gtk_label_set_xalign(GTK_LABEL(label), 0.5);
+    gtk_label_set_yalign(GTK_LABEL(label), 0.5);
+    apply_font_style(label, "Poppins Bold 16");
+    gtk_grid_attach(GTK_GRID(grid), label, 0, 0, 2, 1);
+
+    // Styled Entry Box
+    entry = gtk_entry_new();
+    gtk_entry_set_placeholder_text(GTK_ENTRY(entry), "Enter your answer...");
+    gtk_widget_set_size_request(entry, 400, 40);
+    gtk_grid_attach(GTK_GRID(grid), entry, 0, 1, 2, 1);
+
+    // Feedback Label
+    feedback_label = gtk_label_new("");
+    apply_font_style(feedback_label, "Poppins 14");
+    gtk_grid_attach(GTK_GRID(grid), feedback_label, 0, 3, 2, 1);
+
+    widgets[0] = feedback_label;
+    widgets[1] = entry;
+    widgets[2] = (GtkWidget *)q;
+
+    // Stylish Button
+    button = gtk_button_new_with_label("Submit Answer");
+    apply_cute_button_style(button, COLOR_BLUE, COLOR_GREY);
+    gtk_grid_attach(GTK_GRID(grid), button, 0, 2, 2, 1);
+    g_signal_connect(button, "clicked", G_CALLBACK(check_answer), widgets);
+
+    gtk_widget_show_all(window);
  }
+
  
  void on_value_button_clicked(GtkWidget *widget, gpointer data) {
      (void)widget;
