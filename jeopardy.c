@@ -187,11 +187,7 @@ int main(int argc, char *argv[])
 
         // Check if the answer is correct
         if (valid_answer(category, value, answer)) {
-            printf("Amazingly done, correct!\n");
-            // Update the player's score
-            printf("Enter the player's name: ");
-            scanf("%s", buffer);
-            update_score(players, NUM_PLAYERS, buffer, value);
+            update_score(players, NUM_PLAYERS, players[current_player].name, value);
         } else {
             printf("Incorrect...Sorry!\n");
         }
