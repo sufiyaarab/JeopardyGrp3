@@ -77,7 +77,7 @@
     // Apply bubble-like style with rounded corners and outline
     GtkCssProvider *provider = gtk_css_provider_new();
     gtk_css_provider_load_from_data(provider, 
-        g_strdup_printf("* { border-radius: 25px; border: 2px solid %s; padding: 10px; }", outline_color), -1, NULL);
+        g_strdup_printf("* { border-radius: 15px; border: 2px solid %s; padding: 10px; }", outline_color), -1, NULL);
     gtk_style_context_add_provider(gtk_widget_get_style_context(label),
         GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
     
