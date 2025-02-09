@@ -32,6 +32,7 @@ void apply_cute_button_style(GtkWidget *widget, const char *bg_color, const char
 GtkWidget *create_cute_label_with_bubble(const char *text, const char *bg_color, const char *outline_color);
 void display_question_window(question *q);
 
+//Preset Colour palette
 #define COLOR_BLUE "#BAEDFD"
 #define COLOR_GREEN "#CBE9C5"
 #define COLOR_PINK "#FDEDF5"
@@ -44,6 +45,7 @@ void on_question_button_clicked(GtkWidget *widget, gpointer data)
     display_question_window(q);
 }
 
+//Refreshes board when changes are made
 void refresh_board()
 {
     gtk_widget_destroy(main_grid);
@@ -108,6 +110,7 @@ void apply_background_color(GtkWidget *widget, const char *color)
                                    GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 }
 
+//Applys preset consistent font style
 void apply_font_style(GtkWidget *widget, const gchar *font)
 {
     PangoFontDescription *font_desc = pango_font_description_from_string(font);
@@ -115,6 +118,7 @@ void apply_font_style(GtkWidget *widget, const gchar *font)
     pango_font_description_free(font_desc);
 }
 
+//Cute button style applied for consistency
 void apply_cute_button_style(GtkWidget *widget, const char *bg_color, const char *outline_color)
 {
     apply_background_color(widget, bg_color);
@@ -129,6 +133,7 @@ void apply_cute_button_style(GtkWidget *widget, const char *bg_color, const char
                                    GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 }
 
+//Cute lables applied for consistency
 GtkWidget *create_cute_label_with_bubble(const char *text, const char *bg_color, const char *outline_color)
 {
     GtkWidget *label = gtk_label_new(text);
