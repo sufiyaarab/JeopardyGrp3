@@ -21,16 +21,19 @@
 #include "jeopardy.h"
 
 #define NUM_PLAYERS 4
+#define MAX_SCORE 1000
 
 player players[NUM_PLAYERS];
 int current_player = 0;
 GtkWidget *main_window, *main_grid, *player_label;
+GtkWidget *progress_bars[NUM_PLAYERS];
 
 // Function Prototypes
 void refresh_board();
 void apply_cute_button_style(GtkWidget *widget, const char *bg_color, const char *outline_color);
 GtkWidget *create_cute_label_with_bubble(const char *text, const char *bg_color, const char *outline_color);
 void display_question_window(question *q);
+void update_progress_bar();
 
 //Preset Colour palette
 #define COLOR_BLUE "#BAEDFD"
@@ -44,7 +47,13 @@ void on_question_button_clicked(GtkWidget *widget, gpointer data)
     question *q = (question *)data;
     display_question_window(q);
 }
-
+void update_progress_bar(){
+    for (int i = 0; i < NUM_PLAYERS; i++) {
+        //normalize the score between 0 and 1 based on MAX_SCORE
+        double progress = (double)players[i].score / MAX_SCORE;
+        gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(progress_bars[i]), progress);
+    }
+} 
 //Refreshes board when changes are made
 void refresh_board()
 {
@@ -97,6 +106,50 @@ void refresh_board()
             gtk_grid_attach(GTK_GRID(main_grid), button, col, row + 2, 1, 1);
         }
     }
+    // Create a container box to hold all player boxes with an outline
+    GtkWidget *player_container_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    gtk_container_set_border_width(GTK_CONTAINER(player_container_box), 5);
+    gtk_widget_set_name(player_container_box, "player-container"); // For styling the border
+
+    // Create and display progress bars, names, and scores for each player
+    for (int i = 0; i < NUM_PLAYERS; i++)
+    {
+        // Create a box for each player (vertical)
+        GtkWidget *player_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+
+        // Add a border around the player box
+        GtkCssProvider *provider = gtk_css_provider_new();
+        gtk_css_provider_load_from_data(provider,
+            g_strdup_printf("* { border: 2px solid %s; padding: 10px; border-radius: 10px; }", COLOR_GREY), -1, NULL);
+        gtk_style_context_add_provider(gtk_widget_get_style_context(player_box),
+            GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+
+        // Create a label for the player's name
+        GtkWidget *name_label = create_cute_label_with_bubble(players[i].name, COLOR_PINK, COLOR_GREY);
+        gtk_box_pack_start(GTK_BOX(player_box), name_label, FALSE, FALSE, 0);
+
+        // Create a label for the player's score
+        char score_text[100];
+        snprintf(score_text, sizeof(score_text), "Score: %d", players[i].score);
+        GtkWidget *score_label = create_cute_label_with_bubble(score_text, COLOR_GREEN, COLOR_GREY);
+        gtk_box_pack_start(GTK_BOX(player_box), score_label, FALSE, FALSE, 0);
+
+        // Create the player's progress bar
+        GtkWidget *progress_bar = gtk_progress_bar_new();
+        gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(progress_bar), 1.0); // Max score normalized to 1.0
+        gtk_box_pack_start(GTK_BOX(player_box), progress_bar, FALSE, FALSE, 0);
+
+        // Add the player box to the container box
+        gtk_box_pack_start(GTK_BOX(player_container_box), player_box, FALSE, FALSE, 0);
+
+        // Store the reference to the progress bar
+        progress_bars[i] = progress_bar;
+    }
+
+    // Attach the player container box to the grid
+    gtk_grid_attach(GTK_GRID(main_grid), player_container_box, 3, 2, 1, 4);  // Adjust position as needed
+
+    update_progress_bar();
 
     gtk_widget_show_all(main_window);
 }
