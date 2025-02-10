@@ -35,7 +35,7 @@ GtkWidget *create_cute_label_with_bubble(const char *text, const char *bg_color,
 void display_question_window(question *q);
 void update_progress_bar();
 
-//Preset Colour palette
+// Preset Colour palette
 #define COLOR_BLUE "#BAEDFD"
 #define COLOR_GREEN "#CBE9C5"
 #define COLOR_PINK "#FDEDF5"
@@ -47,15 +47,18 @@ void on_question_button_clicked(GtkWidget *widget, gpointer data)
     question *q = (question *)data;
     display_question_window(q);
 }
-void update_progress_bar(){
-    for (int i = 0; i < NUM_PLAYERS; i++) {
-        //normalize the score between 0 and 1 based on MAX_SCORE
+void update_progress_bar()
+{
+    for (int i = 0; i < NUM_PLAYERS; i++)
+    {
+        // normalize the score between 0 and 1 based on MAX_SCORE
         double progress = (double)players[i].score / MAX_SCORE;
-        if (progress > 1.0) progress = 1.0;
+        if (progress > 1.0)
+            progress = 1.0;
         gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(progress_bars[i]), progress);
     }
-} 
-//Refreshes board when changes are made
+}
+// Refreshes board when changes are made
 void refresh_board()
 {
     gtk_widget_destroy(main_grid);
@@ -66,7 +69,7 @@ void refresh_board()
     char buffer[512];
     snprintf(buffer, sizeof(buffer), "Current Player: %s", players[current_player].name);
     player_label = create_cute_label_with_bubble(buffer, COLOR_PINK, COLOR_GREY);
-    gtk_widget_set_margin_top(player_label, 20);   // Add space from the top
+    gtk_widget_set_margin_top(player_label, 20); // Add space from the top
     gtk_grid_attach(GTK_GRID(main_grid), player_label, 0, 0, 3, 1);
 
     const char *categories[] = {"Programming", "Algorithms", "Databases"};
@@ -83,7 +86,7 @@ void refresh_board()
     {
         for (int col = 0; col < NUM_CATEGORIES; col++)
         {
-            int index = row * NUM_CATEGORIES + col;
+            int index = col * 4 + row;
             GtkWidget *button;
             char label[32];
             snprintf(label, sizeof(label), "$%d", values[row]);
@@ -122,9 +125,9 @@ void refresh_board()
         // Add a border around the player box
         GtkCssProvider *provider = gtk_css_provider_new();
         gtk_css_provider_load_from_data(provider,
-            g_strdup_printf("* { border: 2px solid %s; padding: 10px; border-radius: 10px; }", COLOR_GREY), -1, NULL);
+                                        g_strdup_printf("* { border: 2px solid %s; padding: 10px; border-radius: 10px; }", COLOR_GREY), -1, NULL);
         gtk_style_context_add_provider(gtk_widget_get_style_context(player_box),
-            GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+                                       GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 
         // Create a label for the player's name
         GtkWidget *name_label = create_cute_label_with_bubble(players[i].name, COLOR_PINK, COLOR_GREY);
@@ -149,7 +152,7 @@ void refresh_board()
     }
 
     // Attach the player container box to the grid
-    gtk_grid_attach(GTK_GRID(main_grid), player_container_box, 3, 2, 1, 4);  // Adjust position as needed
+    gtk_grid_attach(GTK_GRID(main_grid), player_container_box, 3, 2, 1, 4); // Adjust position as needed
 
     update_progress_bar();
 
@@ -165,7 +168,7 @@ void apply_background_color(GtkWidget *widget, const char *color)
                                    GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 }
 
-//Applys preset consistent font style
+// Applys preset consistent font style
 void apply_font_style(GtkWidget *widget, const gchar *font)
 {
     PangoFontDescription *font_desc = pango_font_description_from_string(font);
@@ -173,7 +176,7 @@ void apply_font_style(GtkWidget *widget, const gchar *font)
     pango_font_description_free(font_desc);
 }
 
-//Cute button style applied for consistency
+// Cute button style applied for consistency
 void apply_cute_button_style(GtkWidget *widget, const char *bg_color, const char *outline_color)
 {
     apply_background_color(widget, bg_color);
@@ -188,7 +191,7 @@ void apply_cute_button_style(GtkWidget *widget, const char *bg_color, const char
                                    GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 }
 
-//Cute lables applied for consistency
+// Cute lables applied for consistency
 GtkWidget *create_cute_label_with_bubble(const char *text, const char *bg_color, const char *outline_color)
 {
     GtkWidget *label = gtk_label_new(text);
@@ -266,6 +269,9 @@ void check_answer(GtkWidget *widget, gpointer data)
         return;
     }
 
+    // Disable the submit button to prevent multiple clicks
+    gtk_widget_set_sensitive(widget, FALSE);
+
     char trimmed_answer[256];
     sscanf(answer, " %255[^\n]", trimmed_answer);
 
@@ -281,12 +287,18 @@ void check_answer(GtkWidget *widget, gpointer data)
 
     q->answered = true;
 
+    // Debugging Output
+    printf("Player %s answered. Correct: %s | Score: %d\n",
+           players[current_player].name,
+           (strcasecmp(q->answer, trimmed_answer) == 0) ? "Yes" : "No",
+           players[current_player].score);
+
     update_progress_bar();
 
     // Add a delay before closing the window
     GtkWidget *window = gtk_widget_get_toplevel(widget);
 
-    // ⏳ Close the window after 1.5 seconds (1500 milliseconds)
+    // Close the window after 1.5 seconds (1500 milliseconds)
     g_timeout_add(2500, (GSourceFunc)gtk_widget_destroy, window);
 
     // Refresh the board (this can stay immediate as it's non-intrusive)
