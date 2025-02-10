@@ -51,6 +51,7 @@ void update_progress_bar(){
     for (int i = 0; i < NUM_PLAYERS; i++) {
         //normalize the score between 0 and 1 based on MAX_SCORE
         double progress = (double)players[i].score / MAX_SCORE;
+        if (progress > 1.0) progress = 1.0;
         gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(progress_bars[i]), progress);
     }
 } 
@@ -65,6 +66,7 @@ void refresh_board()
     char buffer[512];
     snprintf(buffer, sizeof(buffer), "Current Player: %s", players[current_player].name);
     player_label = create_cute_label_with_bubble(buffer, COLOR_PINK, COLOR_GREY);
+    gtk_widget_set_margin_top(player_label, 20);   // Add space from the top
     gtk_grid_attach(GTK_GRID(main_grid), player_label, 0, 0, 3, 1);
 
     const char *categories[] = {"Programming", "Algorithms", "Databases"};
@@ -269,7 +271,7 @@ void check_answer(GtkWidget *widget, gpointer data)
 
     if (strcasecmp(q->answer, trimmed_answer) == 0)
     {
-        update_score(players, NUM_PLAYERS, players[current_player].name, q->value);
+        players[current_player].score += q->value;
         gtk_label_set_markup(GTK_LABEL(widgets[0]), "<span foreground='green'> Correct! You're going to crush those technical interviews!</span>");
     }
     else
@@ -279,11 +281,13 @@ void check_answer(GtkWidget *widget, gpointer data)
 
     q->answered = true;
 
-    // ✅ Add a delay before closing the window
+    update_progress_bar();
+
+    // Add a delay before closing the window
     GtkWidget *window = gtk_widget_get_toplevel(widget);
 
     // ⏳ Close the window after 1.5 seconds (1500 milliseconds)
-    g_timeout_add(3000, (GSourceFunc)gtk_widget_destroy, window);
+    g_timeout_add(2500, (GSourceFunc)gtk_widget_destroy, window);
 
     // Refresh the board (this can stay immediate as it's non-intrusive)
     refresh_board();
@@ -295,6 +299,7 @@ void check_answer(GtkWidget *widget, gpointer data)
     else
     {
         current_player = (current_player + 1) % NUM_PLAYERS;
+        refresh_board();
     }
 }
 
