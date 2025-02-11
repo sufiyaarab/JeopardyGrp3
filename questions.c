@@ -15,11 +15,11 @@
 #include "questions.h"
 #include <time.h>
 
-// Define the questions array here
+// Define the questions array
 question questions[NUM_QUESTIONS];
 
 
-// Initializes the array of questions for the game
+// Initialize the array of questions for the game
 void initialize_game(void)
 {
     // initialize each question struct and assign it to the questions array
@@ -38,16 +38,17 @@ void initialize_game(void)
         {"databases", "What does ACID stand for in databases?", "Atomicity, Consistency, Isolation, Durability"}
     };
 
-    int values [] = {100, 200, 300, 400};
-    int index = 0;
+    int values [] = {100, 200, 300, 400}; //possible values for the types of questions
+    int index = 0; //index to track the current question that is being initialized
 
+    //  Add categories, questions, answers, and values to the questions array
     for (int i = 0; i < NUM_CATEGORIES; i++){
-        for (int j = 0; j < 4; j++){
-            strcpy(questions[index].category, questions_data[index][0]);
-            strcpy(questions[index].question, questions_data[index][1]);
-            strcpy(questions[index].answer, questions_data[index][2]);
-            questions[index].value = values[j];
-            questions[index].answered = false;
+        for (int j = 0; j < 4; j++){ // Each category has 4 questions
+            strcpy(questions[index].category, questions_data[index][0]); // Assign category
+            strcpy(questions[index].question, questions_data[index][1]); // Assign question
+            strcpy(questions[index].answer, questions_data[index][2]); // Assign correct answer
+            questions[index].value = values[j]; // Assign point value
+            questions[index].answered = false; // Mark question as unanswered 
             index++;
         }
     }
@@ -66,7 +67,7 @@ void display_categories(void)
     }
 }
 
-// Displays the question for the category and dollar value
+// Display the question for the category and dollar value
 void display_question(char *category, int value)
 {
     for (int i = 0; i < NUM_QUESTIONS; i++) {
@@ -78,7 +79,7 @@ void display_question(char *category, int value)
     printf("No question found for %s at $%d or it's already answered.\n", category, value);
 }
 
-// Returns true if the answer is correct for the question for that category and dollar value
+// Return true if the answer is correct for the question for that category and dollar value
 bool valid_answer(char *category, int value, char *answer)
 {
     for (int i = 0; i < NUM_QUESTIONS; i++) {
