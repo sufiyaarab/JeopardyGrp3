@@ -38,9 +38,10 @@ void update_progress_bar();
 // Preset Colour palette
 #define COLOR_BLUE "#BAEDFD"
 #define COLOR_GREEN "#CBE9C5"
-#define COLOR_PINK "#FDEDF5"
+#define COLOR_PINK "#FFD6F1"
 #define COLOR_GREY "#9F8C88"
 #define COLOR_LAVENDER "#EDD1FF"
+#define COLOR_YELLOW "#FFEDC2"
 
 void on_question_button_clicked(GtkWidget *widget, gpointer data)
 {
@@ -63,22 +64,26 @@ void refresh_board()
 {
     gtk_widget_destroy(main_grid);
     main_grid = gtk_grid_new();
+    gtk_container_set_border_width(GTK_CONTAINER(main_grid), 20);
+    gtk_grid_set_column_homogeneous(GTK_GRID(main_grid), TRUE);
+    gtk_grid_set_row_homogeneous(GTK_GRID(main_grid), FALSE);
+    gtk_widget_set_halign(main_grid, GTK_ALIGN_CENTER);
+    gtk_widget_set_valign(main_grid, GTK_ALIGN_START);
     gtk_container_add(GTK_CONTAINER(main_window), main_grid);
 
     // Display the current player
     char buffer[512];
     snprintf(buffer, sizeof(buffer), "Current Player: %s", players[current_player].name);
-    player_label = create_cute_label_with_bubble(buffer, COLOR_PINK, COLOR_GREY);
-    gtk_widget_set_margin_top(player_label, 20); // Add space from the top
-    gtk_grid_attach(GTK_GRID(main_grid), player_label, 0, 0, 3, 1);
+    player_label = create_cute_label_with_bubble(buffer, COLOR_YELLOW, COLOR_GREY);
+    gtk_widget_set_size_request(player_label, -1, 80);
+    gtk_grid_attach(GTK_GRID(main_grid), player_label, 3, 0, 1, 1);
 
     const char *categories[] = {"Programming", "Algorithms", "Databases"};
     for (int i = 0; i < NUM_CATEGORIES; i++)
     {
         GtkWidget *category_label = create_cute_label_with_bubble(categories[i], COLOR_PINK, COLOR_GREY);
-        gtk_widget_set_margin_start(category_label, 10);
-        gtk_widget_set_margin_end(category_label, 10);
-        gtk_grid_attach(GTK_GRID(main_grid), category_label, i, 1, 1, 1);
+        gtk_widget_set_size_request(category_label, -1, 80);  
+        gtk_grid_attach(GTK_GRID(main_grid), category_label, i, 0, 1, 1);
     }
 
     int values[] = {100, 200, 300, 400};
@@ -95,8 +100,8 @@ void refresh_board()
             const char *button_color = (col == 2) ? COLOR_LAVENDER : (col % 2 == 0 ? COLOR_GREEN : COLOR_BLUE);
             apply_cute_button_style(button, button_color, COLOR_GREY);
 
-            gtk_grid_set_row_spacing(GTK_GRID(main_grid), 10);
-            gtk_grid_set_column_spacing(GTK_GRID(main_grid), 10);
+            gtk_grid_set_row_spacing(GTK_GRID(main_grid), 15);
+            gtk_grid_set_column_spacing(GTK_GRID(main_grid), 15);
 
             if (questions[index].answered)
             {
@@ -108,19 +113,21 @@ void refresh_board()
                 g_signal_connect(button, "clicked", G_CALLBACK(on_question_button_clicked), &questions[index]);
             }
 
-            gtk_grid_attach(GTK_GRID(main_grid), button, col, row + 2, 1, 1);
+            gtk_grid_attach(GTK_GRID(main_grid), button, col, row + 1, 1, 1);
         }
     }
     // Create a container box to hold all player boxes with an outline
     GtkWidget *player_container_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_container_set_border_width(GTK_CONTAINER(player_container_box), 5);
-    gtk_widget_set_name(player_container_box, "player-container"); // For styling the border
+    gtk_widget_set_valign(player_container_box, GTK_ALIGN_CENTER); // Center vertically
+    gtk_widget_set_halign(player_container_box, GTK_ALIGN_CENTER); // Center horizontally
 
     // Create and display progress bars, names, and scores for each player
     for (int i = 0; i < NUM_PLAYERS; i++)
     {
         // Create a box for each player (vertical)
-        GtkWidget *player_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+        GtkWidget *player_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 15);
+        gtk_widget_set_size_request(player_box, 180, -1);
 
         // Add a border around the player box
         GtkCssProvider *provider = gtk_css_provider_new();
@@ -141,7 +148,7 @@ void refresh_board()
 
         // Create the player's progress bar
         GtkWidget *progress_bar = gtk_progress_bar_new();
-        gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(progress_bar), 1.0); // Max score normalized to 1.0
+        gtk_widget_set_size_request(progress_bar, 180, 20);
         gtk_box_pack_start(GTK_BOX(player_box), progress_bar, FALSE, FALSE, 0);
 
         // Add the player box to the container box
@@ -152,7 +159,7 @@ void refresh_board()
     }
 
     // Attach the player container box to the grid
-    gtk_grid_attach(GTK_GRID(main_grid), player_container_box, 3, 2, 1, 4); // Adjust position as needed
+    gtk_grid_attach(GTK_GRID(main_grid), player_container_box, 3, 1, 1, 4); // Adjust position as needed
 
     update_progress_bar();
 
@@ -201,7 +208,7 @@ GtkWidget *create_cute_label_with_bubble(const char *text, const char *bg_color,
 
     GtkCssProvider *provider = gtk_css_provider_new();
     gtk_css_provider_load_from_data(provider,
-                                    g_strdup_printf("* { border-radius: 15px; border: 2px solid %s; padding: 10px; }", outline_color), -1, NULL);
+                                    g_strdup_printf("* { border-radius: 15px; border: 2px solid %s; padding: 15px 10px; }", outline_color), -1, NULL);
     gtk_style_context_add_provider(gtk_widget_get_style_context(label),
                                    GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 
@@ -238,8 +245,10 @@ void show_final_rankings()
         char buffer[512];
         snprintf(buffer, sizeof(buffer), "%d. %s - %d points", i + 1, players[i].name, players[i].score);
 
-        GtkWidget *ranking_label = create_cute_label_with_bubble(buffer, COLOR_LAVENDER, COLOR_GREY);
+        GtkWidget *ranking_label = create_cute_label_with_bubble(buffer, COLOR_LAVENDER, COLOR_PINK);
         gtk_widget_set_margin_bottom(ranking_label, 10);
+        gtk_widget_set_margin_bottom(player_label, 10);
+        gtk_widget_set_size_request(player_label, 180, 10);
         gtk_grid_attach(GTK_GRID(grid), ranking_label, 0, i + 1, 1, 1);
     }
 
@@ -299,7 +308,7 @@ void check_answer(GtkWidget *widget, gpointer data)
     GtkWidget *window = gtk_widget_get_toplevel(widget);
 
     // Close the window after 1.5 seconds (1500 milliseconds)
-    g_timeout_add(2500, (GSourceFunc)gtk_widget_destroy, window);
+    g_timeout_add(1500, (GSourceFunc)gtk_widget_destroy, window);
 
     // Refresh the board (this can stay immediate as it's non-intrusive)
     refresh_board();
@@ -367,7 +376,7 @@ int main(int argc, char *argv[])
 
     main_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(main_window), "Jeopardy Game");
-    gtk_window_set_default_size(GTK_WINDOW(main_window), 800, 600);
+    gtk_window_set_default_size(GTK_WINDOW(main_window), 820, 780);
     apply_background_color(main_window, "#FFF9F8");
     g_signal_connect(main_window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
@@ -377,7 +386,7 @@ int main(int argc, char *argv[])
     GtkWidget *title_label = gtk_label_new("Jeopardy");
     gtk_label_set_xalign(GTK_LABEL(title_label), 0.5);
     gtk_label_set_yalign(GTK_LABEL(title_label), 0.5);
-    gtk_widget_override_font(title_label, pango_font_description_from_string("Poppins 30"));
+    gtk_widget_override_font(title_label, pango_font_description_from_string("Poppins 60"));
     apply_background_color(title_label, COLOR_PINK);
     gtk_grid_attach(GTK_GRID(main_grid), title_label, 0, 0, 3, 1);
 
