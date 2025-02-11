@@ -18,13 +18,13 @@
 //initialize the players with a name and score of 0
 void initialize_players(player *players, int num_players){
     for (int i = 0; i < num_players; i++){
-        printf("Enter the name of player %d: ", i+1);
+        printf("Enter the name of player %d: ", i+1); //read player name from input
         scanf("%s", players[i].name);
-        players[i].score = 0;
+        players[i].score = 0; //set initial score
     }
 }
 
-// Returns true if the player name matches one of the existing players
+// Function to check if a player exists in the list. It will return true if a player with the given name is found, false otherwise
 bool player_exists(player *players, int num_players, char *name)
 {
     for (int i = 0; i < num_players; i++){
@@ -35,8 +35,7 @@ bool player_exists(player *players, int num_players, char *name)
     return false;
 }
 
-// Go through the list of players and update the score for the 
-// player given their name
+// Go through the list of players and update the score for them by adding a given score
 void update_score(player *players, int num_players, char *name, int score)
 {
     for (int i = 0; i < num_players; i++){
