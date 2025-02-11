@@ -106,7 +106,7 @@ void refresh_board()
             if (questions[index].answered)
             {
                 gtk_widget_set_sensitive(button, FALSE);
-                gtk_widget_set_opacity(button, 0.5); // Optional: visually indicate disabled buttons
+                gtk_widget_set_opacity(button, 0.5); // visually indicate disabled buttons
             }
             else
             {
@@ -119,8 +119,8 @@ void refresh_board()
     // Create a container box to hold all player boxes with an outline
     GtkWidget *player_container_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_container_set_border_width(GTK_CONTAINER(player_container_box), 5);
-    gtk_widget_set_valign(player_container_box, GTK_ALIGN_CENTER); // Center vertically
-    gtk_widget_set_halign(player_container_box, GTK_ALIGN_CENTER); // Center horizontally
+    gtk_widget_set_valign(player_container_box, GTK_ALIGN_CENTER); 
+    gtk_widget_set_halign(player_container_box, GTK_ALIGN_CENTER); 
 
     // Create and display progress bars, names, and scores for each player
     for (int i = 0; i < NUM_PLAYERS; i++)
@@ -265,7 +265,6 @@ bool all_questions_answered()
     return true;
 }
 
-// ✅ Updated check_answer Function
 void check_answer(GtkWidget *widget, gpointer data)
 {
     GtkWidget **widgets = (GtkWidget **)data;
@@ -307,10 +306,10 @@ void check_answer(GtkWidget *widget, gpointer data)
     // Add a delay before closing the window
     GtkWidget *window = gtk_widget_get_toplevel(widget);
 
-    // Close the window after 1.5 seconds (1500 milliseconds)
+    // Close the window after 1.5 seconds
     g_timeout_add(1500, (GSourceFunc)gtk_widget_destroy, window);
 
-    // Refresh the board (this can stay immediate as it's non-intrusive)
+    // Refresh the board 
     refresh_board();
 
     if (all_questions_answered())
