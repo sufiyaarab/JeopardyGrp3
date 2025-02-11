@@ -233,7 +233,7 @@ void show_final_rankings()
     gtk_grid_set_row_spacing(GTK_GRID(grid), 15);
     gtk_container_add(GTK_CONTAINER(window), grid);
 
-    title_label = gtk_label_new("\xf0\x9f\x8f\x86 Final Rankings \xf0\x9f\x8f\x86");
+    title_label = gtk_label_new("Final Rankings");
     apply_font_style(title_label, "Poppins Bold 18");
     gtk_label_set_xalign(GTK_LABEL(title_label), 0.5);
     gtk_grid_attach(GTK_GRID(grid), title_label, 0, 0, 1, 1);
