@@ -126,7 +126,7 @@ void refresh_board()
     for (int i = 0; i < NUM_PLAYERS; i++)
     {
         // Create a box for each player (vertical)
-        GtkWidget *player_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 15);
+        GtkWidget *player_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 12);
         gtk_widget_set_size_request(player_box, 180, -1);
 
         // Add a border around the player box
